@@ -142,5 +142,5 @@ Usage: <class_name>.update(<_id>, <dictionary>)
 <br>
 # AUTHORS
 - CHIEMERIE OBI
-- MERCY AMARACHI AGBAYI
+- MERCY AMARACHI AGBAYI (GitHub @PricelessEmpireSy)
 
