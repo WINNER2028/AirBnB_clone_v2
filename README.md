@@ -141,6 +141,7 @@ Usage: <class_name>.update(<_id>, <dictionary>)
 ```
 <br>
 # AUTHORS
-- CHIEMERIE OBI
+- CHIEMERIE OBI (@github.com/WINNER2028)
+
 - MERCY AMARACHI AGBAYI (GitHub @PricelessEmpireSy)
 
