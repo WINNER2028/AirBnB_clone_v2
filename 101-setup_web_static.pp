@@ -33,7 +33,7 @@ exec { '/usr/bin/env apt -y update' : }
   ensure => 'link',
   target => '/data/web_static/releases/test'
 }
--> exec { 'chown -R 204421:204421 /data/':
+-> exec { 'chown -R ubuntu:ubuntu /data/':
   path => '/usr/bin/:/usr/local/bin/:/bin/'
 }
 -> file { '/var/www':
