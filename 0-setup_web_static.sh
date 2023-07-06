@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
-# sets up web servers for the deployment of web_static.
+# This setup a web servers for the deployment of the web_static.
 apt update -y
-apt install nginx -y
-ufw allow 'Nginx HTTP'
+apt install -y nginx
 mkdir -p /data/web_static/releases/test/
 mkdir -p /data/web_static/shared/
-echo "<html>
+echo "<!DOCTYPE html>
+<html>
   <head>
   </head>
   <body>
-    Holberton School
+    <h1>Nginx server test</h1>
   </body>
-</html>" > /data/web_static/releases/test/index.html
+</html>" | tee /data/web_static/releases/test/index.html
 ln -sf /data/web_static/releases/test/ /data/web_static/current
 chown -R ubuntu:ubuntu /data
-sed -i '/listen 80 default_server/a location /hbnb_static/ { alias /data/web_static/current/;}' /etc/nginx/sites-available/default
-service nginx restart
+sudo sed -i '39 i\ \tlocation /hbnb_static {\n\t\talias /data/web_static/current;\n\t}\n' /etc/nginx/sites-enabled/default
+sudo service nginx restart
