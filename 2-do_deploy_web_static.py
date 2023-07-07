@@ -1,56 +1,47 @@
 #!/usr/bin/python3
-from fabric.api import *
+"""This is a fabric script that distributes an archive to your web servers"""
+
 from datetime import datetime
-import os.path
+from fabric.api import *
+import os
+
+env.hosts = ["54.234.135.30", "54.172.105.19"]
+env.user = "ubuntu"
 
 
-env.hosts = ['54.234.135.30', '54.172.105.19']
+def do_pack():
+    """This returns the archive path if archive has generated correctly."""
+    local("mkdir -p versions")
+    date = datetime.now().strftime("%Y%m%d%H%M%S")
+    archived_f_path = "versions/web_static_{}.tgz".format(date)
+    t_gzip_archive = local("tar -cvzf {} web_static".format(archived_f_path))
+
+    if t_gzip_archive.succeeded:
+        return archived_f_path
+    else:
+        return None
 
 
 def do_deploy(archive_path):
-    """Function that distributes an archive to your web servers"""
+    """
+        This distributes the archive.
+    """
+    if os.path.exists(archive_path):
+        archived_file = archive_path[9:]
+        newest_version = "/data/web_static/releases/" + archived_file[:-4]
+        archived_file = "/tmp/" + archived_file
+        put(archive_path, "/tmp/")
+        run("sudo mkdir -p {}".format(newest_version))
+        run("sudo tar -xzf {} -C {}/".format(archived_file,
+                                             newest_version))
+        run("sudo rm {}".format(archived_file))
+        run("sudo mv {}/web_static/* {}".format(newest_version,
+                                                newest_version))
+        run("sudo rm -rf {}/web_static".format(newest_version))
+        run("sudo rm -rf /data/web_static/current")
+        run("sudo ln -s {} /data/web_static/current".format(newest_version))
 
-    if os.path.exists(archive_path) is False:
-        return False
+        print("New version deployed!")
+        return True
 
-    status = True
-
-    upload = put(archive_path, '/tmp/')
-    if upload.failed:
-        status = False
-
-    archive_name = archive_path.replace("versions/", "")
-    directory_name = archive_name.replace(".tgz", "")
-
-    folder = '/data/web_static/releases/{}/'.format(directory_name)
-
-    directory = run("mkdir -p {}".format(folder))
-    if directory.failed:
-        status = False
-
-    unpack_cmd = 'tar -xzf /tmp/{} -C {}'.format(archive_name, folder)
-    unpack = run(unpack_cmd)
-    if unpack.failed:
-        status = False
-
-    remove = run('rm /tmp/{}'.format(archive_name))
-    if remove.failed:
-        status = False
-
-    move = run('mv {}web_static/* {}'.format(folder, folder))
-    if move.failed:
-        status = False
-
-    remove = run('rm -rf {}web_static'.format(folder))
-    if remove.failed:
-        status = False
-
-    remove = run('rm -rf /data/web_static/current')
-    if remove.failed:
-        status = False
-
-    link = run('ln -s {} /data/web_static/current'.format(folder))
-    if link.failed:
-        status = False
-
-    return status
+    return False
