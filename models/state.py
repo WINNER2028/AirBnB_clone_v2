@@ -19,6 +19,7 @@ class State(BaseModel, Base):
     else:
         name = ''
 
+    if STORAGE_TYPE != "db":
         @property
         def cities(self):
             """
